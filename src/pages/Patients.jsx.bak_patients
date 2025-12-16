@@ -1,0 +1,11 @@
+﻿import React from "react";
+import PatientList from "../components/Patients/PatientList";
+
+export default function Patients() {
+  return (
+    <div>
+      <h2>Patients</h2>
+      <PatientList />
+    </div>
+  );
+}

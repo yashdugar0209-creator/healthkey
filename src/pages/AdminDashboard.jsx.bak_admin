@@ -1,0 +1,16 @@
+﻿import React from "react";
+
+export default function AdminDashboard() {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+      <p className="mt-2 text-sm text-gray-600">Admin tools: manage users, hospitals, and system settings (demo).</p>
+
+      <section className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-4 border rounded bg-white/5">Users & Roles</div>
+        <div className="p-4 border rounded bg-white/5">Hospitals</div>
+        <div className="p-4 border rounded bg-white/5">System Settings</div>
+      </section>
+    </div>
+  );
+}

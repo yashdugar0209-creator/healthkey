@@ -1,0 +1,15 @@
+﻿import React from "react";
+
+export default function HospitalDashboard() {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Hospital Dashboard</h1>
+      <p className="mt-2 text-sm text-gray-600">Hospital tools: manage facility profiles, departments and staff (demo).</p>
+
+      <section className="mt-6">
+        <div className="p-4 border rounded bg-white/5">Facility Info</div>
+        <div className="p-4 border rounded bg-white/5 mt-4">Department Management</div>
+      </section>
+    </div>
+  );
+}

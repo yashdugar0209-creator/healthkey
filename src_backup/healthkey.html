@@ -1,0 +1,913 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Key, 
+  LayoutDashboard, 
+  Building2, 
+  Stethoscope, 
+  Users, 
+  CreditCard, 
+  Settings, 
+  LogOut,
+  X,
+  Eye,
+  EyeOff,
+  Lock,
+  User,
+  Phone,
+  Mail,
+  ArrowRight,
+  ShieldAlert,
+  Menu,
+  MapPin,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  CheckCircle2,
+  Activity,
+  Database,
+  Shield,
+  Smartphone,
+  FileText,
+  Download,
+  MessageCircle,
+  Moon
+} from 'lucide-react';
+
+// --- Login Modal Component ---
+const LoginModal = ({ isOpen, onClose, type, onLoginSuccess }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ identifier: '', password: '' });
+
+  // Reset state when modal opens/closes or type changes
+  useEffect(() => {
+    setFormData({ identifier: '', password: '' });
+    setError('');
+    setIsLoading(false);
+  }, [isOpen, type]);
+
+  if (!isOpen) return null;
+
+  const config = {
+    patient: {
+      title: "Patient Login",
+      icon: User,
+      color: "bg-blue-600",
+      textColor: "text-blue-600",
+      identifierLabel: "Mobile Number",
+      identifierPlaceholder: "e.g. 9876543210",
+      identifierType: "tel",
+      links: { forgot: "Forgot Password?", secondary: "New Patient? Register" }
+    },
+    doctor: {
+      title: "Doctor Login",
+      icon: Stethoscope,
+      color: "bg-emerald-600",
+      textColor: "text-emerald-600",
+      identifierLabel: "Email or Medical ID",
+      identifierPlaceholder: "e.g. doctor@example.com",
+      identifierType: "text",
+      links: { forgot: "Forgot Password?", secondary: "New Doctor? Apply Now" }
+    },
+    hospital: {
+      title: "Hospital Login",
+      icon: Building2,
+      color: "bg-purple-600",
+      textColor: "text-purple-600",
+      identifierLabel: "Email or Registration ID",
+      identifierPlaceholder: "e.g. hospital@example.com",
+      identifierType: "text",
+      links: { forgot: "Forgot Password?", secondary: "New Hospital? Apply Now" }
+    },
+    admin: {
+      title: "Admin Login",
+      icon: Lock,
+      color: "bg-slate-800",
+      textColor: "text-slate-800",
+      identifierLabel: "Admin ID",
+      identifierPlaceholder: "e.g. admin@healthkey.in",
+      identifierType: "text",
+      note: "Restricted access: Authorized personnel only.",
+      links: { forgot: "Forgot Password?", secondary: null }
+    }
+  };
+
+  const currentConfig = config[type] || config.patient;
+  const Icon = currentConfig.icon;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
+    
+    if (!formData.identifier || !formData.password) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Simulate API Call
+    setTimeout(() => {
+      setIsLoading(false);
+      // Simple validation for demo purposes
+      const isValid = (
+        (type === 'patient' && formData.password === 'patient123') ||
+        (type === 'doctor' && formData.password === 'doctor123') ||
+        (type === 'hospital' && formData.password === 'hospital123') ||
+        (type === 'admin' && formData.password === 'Admin@123')
+      );
+
+      if (!isValid) {
+        setError('Invalid credentials. (Try "patient123", "doctor123", etc.)');
+      } else {
+        onLoginSuccess({ 
+          role: type, 
+          name: type === 'admin' ? 'System Admin' : 
+                type === 'doctor' ? 'Dr. Sarah Smith' : 
+                type === 'hospital' ? 'City General Hospital' : 'Amit Kumar' 
+        });
+        onClose();
+      }
+    }, 1000);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Overlay */}
+      <div 
+        className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal Container */}
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 animate-in fade-in zoom-in duration-200">
+        
+        {/* Close Button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Header */}
+        <div className="pt-8 pb-6 text-center px-8">
+          <div className={`mx-auto w-16 h-16 ${currentConfig.color} rounded-full flex items-center justify-center mb-4 shadow-lg`}>
+            <Icon className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800">{currentConfig.title}</h2>
+          {currentConfig.note && (
+            <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-medium border border-red-100">
+                <ShieldAlert className="w-3 h-3" />
+              {currentConfig.note}
+            </div>
+          )}
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
+          {error && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4" />
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-gray-700">
+              {currentConfig.identifierLabel}
+            </label>
+            <div className="relative">
+              <input
+                type={currentConfig.identifierType}
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                placeholder={currentConfig.identifierPlaceholder}
+                value={formData.identifier}
+                onChange={(e) => setFormData({...formData, identifier: e.target.value})}
+              />
+              <div className="absolute left-3 top-3 text-gray-400">
+                {currentConfig.identifierType === 'tel' ? <Phone className="w-4 h-4" /> : 
+                 currentConfig.identifierType === 'email' ? <Mail className="w-4 h-4" /> : 
+                 <User className="w-4 h-4" />}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+              />
+              <div className="absolute left-3 top-3 text-gray-400">
+                <Lock className="w-4 h-4" />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="rounded text-blue-600 focus:ring-blue-500 border-gray-300" />
+              <span className="text-gray-600">Remember me</span>
+            </label>
+            <button type="button" className={`${currentConfig.textColor} hover:underline font-medium`}>
+              {currentConfig.links.forgot}
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full py-2.5 rounded-lg font-semibold text-white shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 ${currentConfig.color} ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:brightness-110'}`}
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>Login <ArrowRight className="w-4 h-4" /></>
+            )}
+          </button>
+
+          {currentConfig.links.secondary && (
+            <div className="pt-2 text-center text-sm">
+              <button type="button" className="text-gray-500 hover:text-gray-800 font-medium hover:underline">
+                {currentConfig.links.secondary}
+              </button>
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// --- Landing Page Component ---
+const LandingPage = ({ onOpenModal }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setIsMenuOpen(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+      
+      {/* 1. Header / Navigation Bar */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-3' : 'bg-transparent py-5'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            
+            {/* Logo */}
+            <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+              <Key className="h-8 w-8 text-blue-600 mr-2 rotate-45" />
+              <span className={`text-2xl font-bold tracking-tight ${scrolled ? 'text-slate-900' : 'text-slate-800'}`}>
+                HealthKey
+              </span>
+            </div>
+
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center space-x-8">
+              {['Features', 'How It Works', 'About', 'Contact'].map((item) => (
+                <button 
+                  key={item}
+                  onClick={() => scrollToSection(item.toLowerCase().replace(/\s+/g, '-'))}
+                  className="text-slate-600 hover:text-blue-600 font-medium transition-colors"
+                >
+                  {item}
+                </button>
+              ))}
+              <button onClick={() => scrollToSection('login')} className="text-slate-600 hover:text-blue-600 font-medium transition-colors">
+                Login
+              </button>
+              <button 
+                onClick={() => scrollToSection('login')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-blue-600/30 transition-all hover:scale-105"
+              >
+                Get Started
+              </button>
+              <button className="text-slate-400 hover:text-slate-600">
+                <Moon className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center">
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-600 p-2">
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white border-b border-slate-200 absolute w-full">
+            <div className="px-4 pt-2 pb-6 space-y-2">
+              {['Features', 'How It Works', 'About', 'Contact'].map((item) => (
+                <button 
+                  key={item}
+                  onClick={() => scrollToSection(item.toLowerCase().replace(/\s+/g, '-'))}
+                  className="block w-full text-left px-3 py-3 text-slate-600 font-medium hover:bg-slate-50 rounded-lg"
+                >
+                  {item}
+                </button>
+              ))}
+              <div className="pt-4 flex gap-3">
+                 <button 
+                  onClick={() => scrollToSection('login')}
+                  className="flex-1 bg-slate-100 text-slate-700 px-4 py-3 rounded-lg font-semibold"
+                 >
+                   Login
+                 </button>
+                 <button 
+                  onClick={() => scrollToSection('login')}
+                  className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold"
+                 >
+                   Get Started
+                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* 2. Hero Section */}
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        {/* Background blobs */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-70"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-70"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            <div className="lg:w-1/2 text-center lg:text-left">
+              <div className="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-6 border border-blue-100">
+                🚀 Now Live in Delhi NCR
+              </div>
+              <h1 className="text-4xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
+                Your Complete <span className="text-blue-600">Health Record</span> in One Tap
+              </h1>
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                NFC-powered healthcare cards that work across every hospital in India. 
+                Secure, instant access to your medical history when it matters most.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <button 
+                  onClick={() => scrollToSection('login')}
+                  className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-lg shadow-blue-600/30 transition-all hover:-translate-y-1"
+                >
+                  Get Your HealthKey Card
+                </button>
+                <button className="px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 hover:border-slate-400 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                  <Smartphone className="w-5 h-5" /> Watch Demo Video
+                </button>
+              </div>
+
+              <div className="mt-10 flex items-center justify-center lg:justify-start gap-8 text-slate-500 text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-slate-400" /> 50+ Hospitals
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-slate-400" /> 100,000+ Patients
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:w-1/2 relative">
+              {/* Illustration Placeholder */}
+              <div className="relative bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                 {/* Tablet UI Mockup */}
+                 <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 min-h-[300px]">
+                    <div className="h-4 w-32 bg-slate-200 rounded mb-6"></div>
+                    <div className="flex gap-4 mb-6">
+                        <div className="h-20 w-20 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="h-10 w-10 text-blue-500" />
+                        </div>
+                        <div className="space-y-2 flex-1">
+                            <div className="h-4 w-3/4 bg-slate-200 rounded"></div>
+                            <div className="h-4 w-1/2 bg-slate-200 rounded"></div>
+                        </div>
+                    </div>
+                    <div className="h-32 bg-emerald-50 rounded-lg border border-emerald-100 p-4 flex items-center justify-center text-emerald-800 font-medium">
+                        <CheckCircle2 className="w-6 h-6 mr-2 text-emerald-600" /> 
+                        Records Accessed Successfully
+                    </div>
+                 </div>
+                 
+                 {/* Floating NFC Card */}
+                 <div className="absolute -bottom-8 -right-8 bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-xl shadow-xl w-64 text-white transform hover:scale-105 transition-transform cursor-pointer border-t border-white/20">
+                    <div className="flex justify-between items-start mb-8">
+                        <Key className="h-8 w-8 text-yellow-400 rotate-45" />
+                        <Activity className="h-6 w-6 opacity-50" />
+                    </div>
+                    <div className="text-lg font-mono tracking-widest mb-1">•••• •••• •••• 4289</div>
+                    <div className="text-xs opacity-75 uppercase">Universal Health ID</div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Features Section */}
+      <section id="features" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-blue-600 font-semibold tracking-wide uppercase text-sm mb-2">Features</h2>
+            <h3 className="text-3xl md:text-4xl font-bold text-slate-900">Why Choose HealthKey?</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: Activity, title: "Emergency Ready", text: "Critical info available in seconds - blood group, allergies, emergency contacts.", color: "text-red-500", bg: "bg-red-50" },
+              { icon: Building2, title: "Universal Access", text: "One card works at every hospital - private or government, nationwide.", color: "text-blue-500", bg: "bg-blue-50" },
+              { icon: Database, title: "Complete History", text: "All prescriptions, lab reports, vaccinations stored in one secure place.", color: "text-purple-500", bg: "bg-purple-50" },
+              { icon: Shield, title: "Secure & Private", text: "You control your data. See access logs and revoke consent anytime.", color: "text-emerald-500", bg: "bg-emerald-50" },
+            ].map((feature, idx) => (
+              <div key={idx} className="p-8 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-shadow group">
+                <div className={`w-14 h-14 ${feature.bg} ${feature.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                  <feature.icon className="w-7 h-7" />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h4>
+                <p className="text-slate-600 leading-relaxed">{feature.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. How It Works Section */}
+      <section id="how-it-works" className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Simple 3-Step Process</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-200 -z-0"></div>
+
+            {[
+              { title: "Register & Get Card", text: "Sign up online, verify mobile, receive NFC card.", icon: FileText },
+              { title: "Tap at Hospital", text: "Present card at any HealthKey-enabled hospital.", icon: CreditCard },
+              { title: "Records Available", text: "Emergency info first, then full medical history.", icon: FileText }
+            ].map((step, idx) => (
+              <div key={idx} className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-24 h-24 bg-white border-4 border-white shadow-lg rounded-full flex items-center justify-center mb-6 text-blue-600">
+                  <step.icon className="w-10 h-10" />
+                  <div className="absolute top-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold border-4 border-slate-50">
+                    {idx + 1}
+                  </div>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 mb-2">{step.title}</h4>
+                <p className="text-slate-600 max-w-xs">{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. For Patients & Doctors (Split Section) */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            {/* For Patients */}
+            <div className="bg-blue-50 rounded-3xl p-10 lg:p-12">
+              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6">
+                <User className="w-6 h-6" />
+              </div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-6">For Patients</h3>
+              <ul className="space-y-4 mb-8">
+                {[
+                  "Carry digital records instead of heavy files",
+                  "Emergency info always available",
+                  "No repeated medical tests",
+                  "Faster insurance claim processing"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-blue-600 shrink-0" />
+                    <span className="text-slate-700 font-medium">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onClick={() => onOpenModal('patient')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-colors"
+              >
+                Get Started as Patient
+              </button>
+            </div>
+
+            {/* For Doctors */}
+            <div className="bg-emerald-50 rounded-3xl p-10 lg:p-12">
+              <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
+                <Stethoscope className="w-6 h-6" />
+              </div>
+              <h3 className="text-3xl font-bold text-slate-900 mb-6">For Doctors & Hospitals</h3>
+              <ul className="space-y-4 mb-8">
+                {[
+                  "Instant access to patient history",
+                  "Reduced paperwork & admin time",
+                  "Better diagnosis with complete data",
+                  "Seamless EMR integration available"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                    <span className="text-slate-700 font-medium">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onClick={() => onOpenModal('hospital')}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-colors"
+              >
+                Register Your Hospital
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Login/Registration Gateway (Role Cards) */}
+      <section id="login" className="py-24 bg-slate-900 relative overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute top-0 left-1/4 w-full h-full bg-gradient-to-br from-blue-900/20 to-transparent pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Access Your HealthKey Account</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">Select your role to login or register to the unified portal.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Patient Card */}
+            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-blue-500/50 transition-colors group flex flex-col">
+              <div className="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <User className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Patient</h3>
+              <p className="text-slate-400 text-sm mb-6 flex-1">Access your health records, view access logs, and manage consent.</p>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => onOpenModal('patient')} 
+                  className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Patient Login
+                </button>
+                <button className="w-full py-2 bg-transparent border border-slate-600 text-slate-300 hover:text-white hover:border-slate-400 rounded-lg font-medium text-sm transition-colors">
+                  New Patient Register
+                </button>
+              </div>
+            </div>
+
+            {/* Doctor Card */}
+            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-emerald-500/50 transition-colors group flex flex-col">
+              <div className="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Stethoscope className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Doctor</h3>
+              <p className="text-slate-400 text-sm mb-6 flex-1">View patient records, add prescriptions, and manage appointments.</p>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => onOpenModal('doctor')} 
+                  className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Doctor Login
+                </button>
+                <button className="w-full py-2 bg-transparent border border-slate-600 text-slate-300 hover:text-white hover:border-slate-400 rounded-lg font-medium text-sm transition-colors">
+                  Doctor Registration
+                </button>
+              </div>
+            </div>
+
+            {/* Hospital Card */}
+            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-purple-500/50 transition-colors group flex flex-col">
+              <div className="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Building2 className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Hospital</h3>
+              <p className="text-slate-400 text-sm mb-6 flex-1">Manage doctors, access patient records, and generate reports.</p>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => onOpenModal('hospital')} 
+                  className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Hospital Login
+                </button>
+                <button className="w-full py-2 bg-transparent border border-slate-600 text-slate-300 hover:text-white hover:border-slate-400 rounded-lg font-medium text-sm transition-colors">
+                  Hospital Registration
+                </button>
+              </div>
+            </div>
+
+            {/* Admin Card */}
+            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-slate-400/50 transition-colors group flex flex-col">
+              <div className="w-14 h-14 bg-slate-500/10 text-slate-400 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Lock className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Admin</h3>
+              <p className="text-slate-400 text-sm mb-6 flex-1">System administration, approve registrations, and manage users.</p>
+              <div className="space-y-3 mt-auto">
+                <button 
+                  onClick={() => onOpenModal('admin')} 
+                  className="w-full py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg font-medium transition-colors"
+                >
+                  Admin Login
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 8. About & Contact Section */}
+      <section id="about" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            
+            {/* About */}
+            <div>
+              <h2 className="text-blue-600 font-semibold tracking-wide uppercase text-sm mb-2">About Us</h2>
+              <h3 className="text-3xl font-bold text-slate-900 mb-6">Mission: Universal Healthcare Access</h3>
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                HealthKey is dedicated to making healthcare accessible, portable, and secure for every Indian. 
+                We envision a unified health record system connecting every hospital in India, eliminating the 
+                need for paper files and ensuring critical data is available when it matters most.
+              </p>
+              
+              <div className="flex gap-8 mb-8">
+                <div className="border-l-4 border-blue-600 pl-4">
+                  <div className="text-2xl font-bold text-slate-900">2024</div>
+                  <div className="text-sm text-slate-500">Founded in Delhi</div>
+                </div>
+                <div className="border-l-4 border-emerald-500 pl-4">
+                  <div className="text-2xl font-bold text-slate-900">2025</div>
+                  <div className="text-sm text-slate-500">National Rollout</div>
+                </div>
+              </div>
+
+              <button className="text-blue-600 font-semibold flex items-center hover:underline">
+                Learn More About Us <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </div>
+
+            {/* Contact Form */}
+            <div id="contact" className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">Get in Touch</h3>
+              
+              <div className="space-y-6 mb-8">
+                <div className="flex items-start gap-4">
+                  <MapPin className="w-5 h-5 text-blue-600 mt-1" />
+                  <div>
+                    <div className="font-semibold text-slate-900">HealthKey Technologies</div>
+                    <div className="text-slate-500 text-sm">DLF Cyber City, Delhi NCR, India</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Phone className="w-5 h-5 text-blue-600" />
+                  <span className="text-slate-600">+91 1800-HEALTHKEY</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Mail className="w-5 h-5 text-blue-600" />
+                  <span className="text-slate-600">contact@healthkey.in</span>
+                </div>
+              </div>
+
+              <form className="space-y-4">
+                <input type="text" placeholder="Your Name" className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="email" placeholder="Email Address" className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" />
+                <select className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-600">
+                  <option>Select Role</option>
+                  <option>Patient</option>
+                  <option>Doctor</option>
+                  <option>Hospital Admin</option>
+                  <option>Investor</option>
+                </select>
+                <textarea rows={3} placeholder="Message" className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                <button className="w-full bg-slate-900 text-white py-3 rounded-lg font-semibold hover:bg-slate-800 transition-colors">
+                  Send Message
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 10. Footer */}
+      <footer className="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div className="col-span-1 md:col-span-1">
+              <div className="flex items-center mb-4">
+                <Key className="h-6 w-6 text-blue-500 mr-2 rotate-45" />
+                <span className="text-xl font-bold text-white">HealthKey</span>
+              </div>
+              <p className="text-sm text-slate-400 mb-4">
+                One Nation, One Health Card. <br/> Making healthcare simple.
+              </p>
+              <div className="flex space-x-4">
+                <Facebook className="w-5 h-5 hover:text-white cursor-pointer" />
+                <Twitter className="w-5 h-5 hover:text-white cursor-pointer" />
+                <Linkedin className="w-5 h-5 hover:text-white cursor-pointer" />
+                <Instagram className="w-5 h-5 hover:text-white cursor-pointer" />
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-blue-400">Home</a></li>
+                <li><a href="#features" className="hover:text-blue-400">Features</a></li>
+                <li><a href="#how-it-works" className="hover:text-blue-400">How It Works</a></li>
+                <li><a href="#about" className="hover:text-blue-400">About Us</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-blue-400">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-blue-400">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-blue-400">Data Security</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-semibold mb-4">Resources</h4>
+              <button className="flex items-center text-sm hover:text-blue-400 mb-2">
+                <Download className="w-4 h-4 mr-2" /> Download Brochure
+              </button>
+              <div className="mt-4 inline-block bg-slate-800 px-3 py-1 rounded text-xs border border-slate-700">
+                🇮🇳 Made in India
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-slate-800 pt-8 text-center text-sm text-slate-500">
+            &copy; 2024 HealthKey Technologies. All rights reserved.
+          </div>
+        </div>
+      </footer>
+
+      {/* Floating Chat Widget */}
+      <button className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 transition-transform hover:scale-110 z-40">
+        <MessageCircle className="w-6 h-6" />
+      </button>
+
+    </div>
+  );
+};
+
+// --- Dashboard Component ---
+const Dashboard = ({ user, onLogout }) => {
+  const [activeTab, setActiveTab] = useState('NFC Cards');
+
+  const navItems = [
+    { name: 'Dashboard', icon: LayoutDashboard },
+    { name: 'Hospitals', icon: Building2 },
+    { name: 'Doctors', icon: Stethoscope },
+    { name: 'Patients', icon: Users },
+    { name: 'NFC Cards', icon: CreditCard },
+    { name: 'Settings', icon: Settings },
+  ];
+
+  return (
+    <div className="flex h-screen bg-gray-200 font-sans text-slate-800">
+      <aside className="w-64 bg-slate-700 text-gray-400 flex flex-col shrink-0 transition-all duration-300">
+        <div className="h-20 flex items-center px-6 bg-slate-700">
+          <Key className="h-8 w-8 text-yellow-500 mr-3 rotate-45" />
+          <span className="text-2xl font-bold text-gray-100 tracking-tight">HealthKey</span>
+        </div>
+
+        <nav className="flex-1 py-6 space-y-1">
+          {navItems.map((item) => {
+            const isActive = activeTab === item.name;
+            return (
+              <button
+                key={item.name}
+                onClick={() => setActiveTab(item.name)}
+                className={`w-full flex items-center px-6 py-4 text-sm font-medium transition-colors duration-150 ${
+                  isActive 
+                    ? 'bg-slate-600 text-gray-100 border-l-4 border-blue-500' 
+                    : 'hover:bg-slate-600 hover:text-gray-200 border-l-4 border-transparent'
+                }`}
+              >
+                <item.icon className={`h-5 w-5 mr-3 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
+                {item.name}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      <div className="flex-1 flex flex-col overflow-hidden bg-gray-200">
+        <header className="h-20 bg-gray-200 flex items-center justify-between px-8 border-b border-gray-300/50">
+          <h1 className="text-xl font-bold text-gray-700 uppercase tracking-wide">
+            {user.role === 'admin' ? 'Admin Dashboard' : `${user.role} Dashboard`}
+          </h1>
+          <div className="flex items-center gap-6">
+            <span className="text-gray-600 font-medium">{user.name}</span>
+            <button 
+              onClick={onLogout}
+              className="px-4 py-1.5 border border-slate-400 text-slate-600 rounded hover:bg-white hover:text-slate-800 transition-colors text-sm font-medium flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" /> Logout
+            </button>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-8 relative">
+          {activeTab === 'NFC Cards' ? (
+            <div className="max-w-4xl mx-auto">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-300 to-purple-300 rounded-2xl opacity-75 blur"></div>
+                <div className="relative bg-gray-200 rounded-xl p-8 h-[500px] flex flex-col">
+                  <h2 className="text-2xl font-bold text-gray-700 mb-2">NFC Card Management</h2>
+                  <p className="text-gray-500 mb-12">
+                    Manage physical HealthKey cards and assign them to patients.
+                  </p>
+
+                  <div className="flex-1 border-2 border-dashed border-gray-300 rounded-lg bg-gray-200/50 flex flex-col items-center justify-center gap-6 mx-8 mb-8">
+                    <div className="bg-sky-100 p-4 rounded-full bg-opacity-0">
+                       <CreditCard className="h-12 w-12 text-sky-600 opacity-80" /> 
+                    </div>
+                    
+                    <button className="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2.5 px-6 rounded shadow-sm transition-colors flex items-center gap-2">
+                      Scan & Assign New Card
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="text-center">
+                <LayoutDashboard className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                <p>Select "NFC Cards" to view the target design.</p>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+// --- Main App Entry Point ---
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [activeModal, setActiveModal] = useState(null);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setActiveModal(null);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+  };
+
+  if (user) {
+    return <Dashboard user={user} onLogout={handleLogout} />;
+  }
+
+  return (
+    <>
+      <LandingPage onOpenModal={setActiveModal} />
+      <LoginModal 
+        isOpen={!!activeModal} 
+        onClose={() => setActiveModal(null)} 
+        type={activeModal}
+        onLoginSuccess={handleLoginSuccess}
+      />
+    </>
+  );
+}

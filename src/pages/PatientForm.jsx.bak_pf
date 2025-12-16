@@ -1,0 +1,77 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import dataService from "../services/DataService";
+import { v4 as uuidv4 } from "uuid";
+
+export default function PatientForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", age: "", gender: "", notes: "" });
+  const [isEdit, setIsEdit] = useState(false);
+
+  useEffect(() => {
+    dataService.init();
+    if (id) {
+      const list = dataService.get("patients", []);
+      const found = list.find((p) => String(p.id) === String(id));
+      if (found) {
+        setForm({ name: found.name || "", age: found.age || "", gender: found.gender || "", notes: found.notes || "" });
+        setIsEdit(true);
+      }
+    }
+  }, [id]);
+
+  function onChange(e) {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+  }
+
+  function onSubmit(e) {
+    e.preventDefault();
+    const list = dataService.get("patients", []) || [];
+    if (isEdit) {
+      const updated = list.map((p) => (String(p.id) === String(id) ? { ...p, ...form } : p));
+      dataService.set("patients", updated);
+    } else {
+      const newPatient = { id: uuidv4(), ...form };
+      dataService.set("patients", [...list, newPatient]);
+    }
+    navigate("/patients");
+  }
+
+  return (
+    <div>
+      <h2>{isEdit ? "Edit patient" : "Add patient"}</h2>
+      <form onSubmit={onSubmit} style={{ maxWidth: 520 }}>
+        <div style={{ marginBottom: 8 }}>
+          <label>Name</label><br />
+          <input name="name" value={form.name} onChange={onChange} style={{ width: "100%", padding: 8 }} />
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <label>Age</label><br />
+          <input name="age" value={form.age} onChange={onChange} style={{ width: "100%", padding: 8 }} />
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <label>Gender</label><br />
+          <select name="gender" value={form.gender} onChange={onChange} style={{ width: "100%", padding: 8 }}>
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <label>Notes</label><br />
+          <textarea name="notes" value={form.notes} onChange={onChange} style={{ width: "100%", padding: 8 }} />
+        </div>
+
+        <div>
+          <button type="submit" style={{ padding: "8px 12px" }}>{isEdit ? "Save" : "Create"}</button>
+        </div>
+      </form>
+    </div>
+  );
+}

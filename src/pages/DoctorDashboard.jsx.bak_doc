@@ -1,0 +1,15 @@
+﻿import React from "react";
+
+export default function DoctorDashboard() {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Doctor Dashboard</h1>
+      <p className="mt-2 text-sm text-gray-600">Doctor tools: view your appointments, patient records and notes (demo).</p>
+
+      <section className="mt-6">
+        <div className="p-4 border rounded bg-white/5">My Appointments</div>
+        <div className="p-4 border rounded bg-white/5 mt-4">Patient Queue</div>
+      </section>
+    </div>
+  );
+}

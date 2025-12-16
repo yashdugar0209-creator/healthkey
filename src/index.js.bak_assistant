@@ -1,0 +1,24 @@
+// src/index.js
+import './index.css';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import ErrorBoundary from './ErrorBoundary';
+
+// Small startup guard: ensure common objects exist to avoid trivial undefined reads.
+// (This is intentionally conservative — doesn't create app globals you don't want.)
+if (typeof window !== 'undefined') {
+  // Example: if some code expects window.someGlobal.LTE, avoid throwing at startup:
+  if (!window.__HK_SAFE) {
+    window.__HK_SAFE = {};
+  }
+}
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);

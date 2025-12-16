@@ -1,0 +1,62 @@
+// src/App.jsx
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Layout/Navbar";
+import LandingPage from './components/LandingPage';
+
+// Lazy-load pages - adjust paths if your page files are in different folders
+const Home = lazy(() => import("./pages/Home"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Patients = lazy(() => import("./pages/Patients"));
+const Login = lazy(() => import("./pages/Login"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+export default function App() {
+  return (
+    <Router>
+      <Navbar />
+      <main style={{ padding: 16 }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+  <Route path="/" element={<LandingPage />} />
+  <Route path="/login" element={<LoginPage />} />
+  <Route path="/emergency" element={<EmergencyAccess />} />
+  
+  <Route path="/dashboard" element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  } />
+  
+  <Route path="/patient/*" element={
+    <ProtectedRoute allowedRoles={['patient']}>
+      <PatientPortal />
+    </ProtectedRoute>
+  } />
+  
+  <Route path="/doctor/*" element={
+    <ProtectedRoute allowedRoles={['doctor']}>
+      <DoctorPortal />
+    </ProtectedRoute>
+  } />
+  
+  <Route path="/hospital/*" element={
+    <ProtectedRoute allowedRoles={['hospital']}>
+      <HospitalPortal />
+    </ProtectedRoute>
+  } />
+  
+  <Route path="/admin/*" element={
+    <ProtectedRoute allowedRoles={['admin']}>
+      <AdminPortal />
+    </ProtectedRoute>
+  } />
+  
+  {/* Catch-all route - redirect to home */}
+  <Route path="*" element={<Navigate to="/" replace />} />
+</Routes>
+        </Suspense>
+      </main>
+    </Router>
+  );
+}

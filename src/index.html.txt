@@ -1,0 +1,17 @@
+# Create public/index.html
+mkdir -p public
+echo '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="HealthKey - India'\''s First NFC-Based Unified Health Record System" />
+    <title>HealthKey | India'\''s NFC Health Record System</title>
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+</body>
+</html>' > public/index.html

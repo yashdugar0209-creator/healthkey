@@ -1,0 +1,32 @@
+import React, { useEffect, useState } from "react";
+import dataService from "../services/DataService";
+
+export default function Dashboard() {
+  const [visits, setVisits] = useState(0);
+
+  useEffect(() => {
+    try {
+      dataService.init();
+      const v = dataService.get("visits", 0) || 0;
+      dataService.set("visits", v + 1);
+      setVisits(v + 1);
+    } catch (e) {
+      console.warn("Dashboard error:", e);
+    }
+  }, []);
+
+  return (
+    <div>
+      <h2>Dashboard</h2>
+      <p>Demo visits counter (localStorage): <strong>{visits}</strong></p>
+
+      <section style={{ marginTop: 20 }}>
+        <h3>Quick actions</h3>
+        <ul>
+          <li>View patients</li>
+          <li>Manage settings</li>
+        </ul>
+      </section>
+    </div>
+  );
+}

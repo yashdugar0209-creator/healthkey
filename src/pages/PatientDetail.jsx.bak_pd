@@ -1,0 +1,42 @@
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import dataService from "../services/DataService";
+
+export default function PatientDetail() {
+  const { id } = useParams();
+  const [patient, setPatient] = useState(null);
+
+  useEffect(() => {
+    try {
+      const list = dataService.get("patients", []);
+      const found = list.find((p) => String(p.id) === String(id));
+      setPatient(found || null);
+    } catch (e) {
+      console.warn("PatientDetail error:", e);
+      setPatient(null);
+    }
+  }, [id]);
+
+  if (!patient) {
+    return (
+      <div>
+        <h3>Patient not found</h3>
+        <Link to="/patients">Back to patients</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h2>{patient.name}</h2>
+      <p><strong>Age:</strong> {patient.age || "-"}</p>
+      <p><strong>Gender:</strong> {patient.gender || "-"}</p>
+      <p><strong>Notes:</strong> {patient.notes || "—"}</p>
+
+      <div style={{ marginTop: 12 }}>
+        <Link to={`/patients/${patient.id}/edit`} style={{ marginRight: 8 }}>Edit</Link>
+        <Link to="/patients">Back</Link>
+      </div>
+    </div>
+  );
+}
