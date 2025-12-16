@@ -25,11 +25,12 @@
     "zod": "^4.1.13"
   },
   "scripts": {
-    "start": "set BROWSERSLIST_IGNORE_OLD_DATA=1 && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+  "start": "react-scripts start",
+  "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
+}
+
   "browserslist": {
     "production": [
       ">0.2%",
