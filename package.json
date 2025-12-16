@@ -24,20 +24,17 @@
     "uuid": "^13.0.0",
     "zod": "^4.1.13"
   },
-"scripts": {
-  "start": "react-scripts start",
-  "build": "CI=false react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject"
-}
-
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "cross-env CI=false react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all",
-      "not IE 11",
-      "not IE_Mob 11"
+      "not op_mini all"
     ],
     "development": [
       "last 1 chrome version",
@@ -51,6 +48,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "autoprefixer": "^10.4.16",
+    "cross-env": "7",
     "eslint-plugin-import": "^2.32.0",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.0",
