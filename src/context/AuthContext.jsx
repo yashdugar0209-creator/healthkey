@@ -1,5 +1,4 @@
-﻿/* eslint-disable import/no-unresolved */
-/*
+﻿/*
   Safe demo AuthContext for HealthKey
   - login({email, role, name}) returns a demo user object and never throws
   - persists to dataService if available
