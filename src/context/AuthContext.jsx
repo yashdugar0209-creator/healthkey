@@ -9,8 +9,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 let safeDataService = null;
 try {
   // try to require the project's dataService if present
-  // eslint-disable-next-line import/no-unresolved
-  // NOTE: Keep this import dynamic to avoid breaking build if the file is missing.
+    // NOTE: Keep this import dynamic to avoid breaking build if the file is missing.
   safeDataService = require("../services/DataService").default;
 } catch (e) {
   safeDataService = null;
